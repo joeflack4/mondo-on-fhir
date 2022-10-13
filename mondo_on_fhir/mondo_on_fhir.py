@@ -1,4 +1,7 @@
 """Mondo on FHIR
+
+todo's (minor)
+ - Remove InsecureRequestWarning from GitHub download
 """
 import os
 import subprocess
@@ -21,6 +24,17 @@ DEFAULTS = {
 
 
 # Functions
+def download_dependency(url: str, path: str):
+    """Download file at url to local path"""
+    _dir = os.path.dirname(path)
+    if not os.path.exists(_dir):
+        os.mkdir(_dir)
+    if not os.path.exists(path):
+        with open(path, 'wb') as f:
+            resp = requests.get(url, verify=False)
+            f.write(resp.content)
+
+
 # TODO: Add version to download name
 def download_dependencies(
     mondo_url='https://github.com/monarch-initiative/mondo/releases/download/v2022-07-01/mondo.owl',
@@ -28,14 +42,8 @@ def download_dependencies(
     fhir_owl_path=DEFAULTS['fhir_owl_path'], mondo_path=DEFAULTS['mondo_path']
 ):
     """Download"""
-    if not os.path.exists(mondo_path):
-        with open(mondo_path, 'wb') as f:
-            resp = requests.get(mondo_url, verify=False)
-            f.write(resp.content)
-    if not os.path.exists(fhir_owl_path):
-        with open(fhir_owl_path, 'wb') as f:
-            resp = requests.get(fhir_owl_url, verify=False)
-            f.write(resp.content)
+    download_dependency(mondo_url, mondo_path)
+    download_dependency(fhir_owl_url, fhir_owl_path)
 
 
 # TODO: Utilize args: https://github.com/aehrc/fhir-owl
