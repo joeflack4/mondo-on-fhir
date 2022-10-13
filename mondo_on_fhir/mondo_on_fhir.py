@@ -53,7 +53,15 @@ def run(out_dir) -> Dict[str, pd.DataFrame]:
     download_dependencies()
     # TODO: Add version to outfile
     outpath = os.path.join(out_dir, 'mondo.json')
-    args = f'java -jar {DEFAULTS["fhir_owl_path"]} -i {DEFAULTS["mondo_path"]} -o {outpath}'
+    extra_flags = [
+        # Synonyms
+        '-s ,"http://www.geneontology.org/formats/oboInOwl#hasSynonym",'
+        '"http://www.geneontology.org/formats/oboInOwl#hasExactSynonym",'
+        '"http://www.geneontology.org/formats/oboInOwl#hasNarrowSynonym",'
+        '"http://www.geneontology.org/formats/oboInOwl#hasBroadSynonym",'
+        '"http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym"'
+    ]
+    args = f'java -jar {DEFAULTS["fhir_owl_path"]} -i {DEFAULTS["mondo_path"]} -o {outpath} {" ".join(extra_flags)}'
     subprocess.run(args.split(' '))
 
     return {
